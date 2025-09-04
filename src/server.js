@@ -37,6 +37,10 @@ app.use(express.json({ limit: "20mb" }));
 
 // app.use(express.json());
 
+app.get('/',(req,res)=>{
+  res.status(200).send("Welcome to Nodejs Backend!")
+})
+
 app.use(userRouter);
 app.use(foodItemRouter); 
 app.use(categoryRouter);
