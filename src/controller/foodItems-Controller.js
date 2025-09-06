@@ -67,7 +67,13 @@ const deleteFoodItemById = async (req, res) => {
       "public",
       product.imageUrl
     );
- 
+    fs.unlink(imagePath, (err) => {
+      if (err) {
+        console.error("Failed to delete old image:", err);
+      } else {
+        console.log("Old image deleted successfully");
+      }
+    });
     // Delete product from DB
     await FoodItem.findByIdAndDelete(req.params.id);
     res.status(200).json({ message: "Product and image deleted successfully" });
@@ -117,7 +123,9 @@ const updateFoodItemById = async (req, res) => {
       { name, category, price, description, imageUrl, available },
       { new: true }
     );
-    res.status(200).json({ message: "Food item updated successfully", updatedItem });
+    res
+      .status(200)
+      .json({ message: "Food item updated successfully", updatedItem });
   } catch (error) {
     console.error("Error in updateFoodItemById:", error);
     res.status(500).json({ message: "Internal server error" });
@@ -130,13 +138,14 @@ const updateFoodItemById = async (req, res) => {
 const getRandomMenu = async (req, res) => {
   try {
     const limit = parseInt(req.query.limit) || 5; // how many random items
-    const randomItems = await FoodItem.aggregate([{ $sample: { size: limit } }]);
+    const randomItems = await FoodItem.aggregate([
+      { $sample: { size: limit } },
+    ]);
     res.status(200).json(randomItems);
   } catch (error) {
     res.status(500).json({ message: "Error fetching random items", error });
   }
 };
-
 
 module.exports = {
   addFoodItem,

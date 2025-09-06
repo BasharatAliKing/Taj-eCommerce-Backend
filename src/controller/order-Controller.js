@@ -17,5 +17,15 @@ const createOrder = async (req, res) => {
     res.status(500).json({ message: err.message });
   }
 };
-
-module.exports={createOrder};
+//**************************************************** */
+//        Cget ORDER table HERE
+//**************************************************** */
+const getAllOrders=async(req,res)=>{
+  try{
+      const getOrders=await Order.find();
+      res.status(200).json({message:getOrders});
+  }catch(err){
+    res.status(500).json({message:err});
+  }
+}
+module.exports={createOrder,getAllOrders};

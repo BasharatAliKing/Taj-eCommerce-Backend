@@ -8,6 +8,7 @@ const userRouter = require("./router/user-Router");
 const foodItemRouter=require("./router/foodItems-Router")
 const categoryRouter=require("./router/category.Router")
 const orderRouter=require("./router/order-Router");
+const galleryRouter=require("./router/gallery-router");
 const allowedOrigins = ["https://greenceo.co", "http://localhost:5173"];
 
 // const coreOptions = {
@@ -39,12 +40,13 @@ app.use(express.json({ limit: "20mb" }));
 
 app.get('/',(req,res)=>{
   res.status(200).send("Welcome to Nodejs Backend!")
-})
+});
 
 app.use(userRouter);
 app.use(foodItemRouter); 
 app.use(categoryRouter);
 app.use(orderRouter);
+app.use(galleryRouter);
 //app.use("/admin", fieldRouter);
 
 app.listen(port, () => {
@@ -53,6 +55,6 @@ app.listen(port, () => {
 //*********************************************************************** */
 //_______________________________________________________________________
 //   Start Date :  28 Aug 2025 Thrusday 06:15AM
-//   Developed by Basharat Ali  +923211339413 WhatsApp Full Stack Developer 
+//   Developed by Basharat Ali  +923211339413  WhatsApp Full Stack Developer 
 //________________________________________________________________________
 //************************************************************************* */
