@@ -6,10 +6,9 @@ const path = require("path");
 //************************************************ */
 const addFoodItem = async (req, res) => {
   try {
-    const { name, category, price, description, available } = req.body;
+    const { name, category, price, description, available , suggestions} = req.body;
     // multer saves file in req.file
     const imageUrl = req.file ? `/uploads/${req.file.filename}` : null;
-
     const foodItemCreated = await FoodItem.create({
       name,
       category,
@@ -17,6 +16,7 @@ const addFoodItem = async (req, res) => {
       description,
       imageUrl,
       available,
+      suggestions,
     });
     res.status(201).json({ message: foodItemCreated });
   } catch (err) {
@@ -88,7 +88,7 @@ const deleteFoodItemById = async (req, res) => {
 const updateFoodItemById = async (req, res) => {
   try {
     const { id } = req.params;
-    const { name, category, price, description, available } = req.body;
+    const { name, category, price, description, available , suggestions } = req.body;
     // Find existing food item
     const existingItem = await FoodItem.findById(id);
     if (!existingItem) {
@@ -120,7 +120,7 @@ const updateFoodItemById = async (req, res) => {
     // Update DB
     const updatedItem = await FoodItem.findByIdAndUpdate(
       id,
-      { name, category, price, description, imageUrl, available },
+      { name, category, price, description, imageUrl, available, suggestions },
       { new: true }
     );
     res
