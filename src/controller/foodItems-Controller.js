@@ -116,7 +116,6 @@ const updateFoodItemById = async (req, res) => {
         });
       }
     }
-
     // Update DB
     const updatedItem = await FoodItem.findByIdAndUpdate(
       id,
