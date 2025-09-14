@@ -1,0 +1,147 @@
+const BASE_URL = process.env.SERVER_URL || "http://localhost:3000";
+
+// ---------------- Customer Email ----------------
+const orderConfirmationTemplate = (user, order) => {
+  return `
+  <!DOCTYPE html>
+  <html>
+  <head>
+    <meta charset="utf-8" />
+    <title>Order Confirmation</title>
+    <style>
+      body { font-family: Arial, sans-serif; background: #f5f5f5; margin: 0; padding: 0; }
+      .container { max-width: 800px; margin: 30px auto; background: #ffffff; border-radius: 8px; overflow: hidden; border: 1px solid #ddd; }
+      .header { background: #221b4b; color: #fff; padding: 25px; text-align: center; }
+      .header h1 { margin: 0; font-size: 22px; }
+      .content { padding: 20px; color: #333; }
+      .summary { margin: 20px 0; font-size: 15px; }
+      .summary p { margin: 4px 0; }
+      .table-container { margin-top: 20px; }
+      table { width: 100%; border-collapse: collapse; }
+      th, td { border: 1px solid #ddd; padding: 12px; text-align: center; font-size: 14px; }
+      th { background: #f5b301; color: #221b4b; }
+      td img { width: 70px; height: 70px; object-fit: cover; border-radius: 6px; }
+      .total { font-weight: bold; font-size: 16px; }
+      .footer { background: #fafafa; text-align: center; padding: 15px; font-size: 13px; color: #777; }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="header">
+        <h1>K2-Taj ✅ Order Confirmation</h1>
+        <p>Thank you for shopping with us</p>
+      </div>
+      <div class="content">
+        <p>Hi ${user.firstName} ${user.lastName},</p>
+        <p>Your order has been placed successfully. Below are your order details:</p>
+
+        <div class="summary">
+          <p><strong>Order ID:</strong> ${order._id}</p>
+          <p><strong>Status:</strong> ${order.status}</p>
+          <p><strong>Date:</strong> ${new Date(order.createdAt).toLocaleDateString()}</p>
+        </div>
+
+        <div class="table-container">
+          <table>
+            <thead>
+              <tr>
+                <th>Product</th>
+                <th>Name</th>
+                <th>Category</th>
+                <th>Qty</th>
+                <th>Price</th>
+                <th>Total</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${order.items.map(item => `
+                <tr>
+                  <td><img src="${BASE_URL}/${item.imageUrl}" alt="${item.name}" /></td>
+                  <td>${item.name}</td>
+                  <td>${item.category}</td>
+                  <td>${item.quantity}</td>
+                  <td>$${item.price.toFixed(2)}</td>
+                  <td>$${(item.price * item.quantity).toFixed(2)}</td>
+                </tr>
+              `).join("")}
+            </tbody>
+          </table>
+        </div>
+
+        <div class="summary" style="margin-top: 20px; text-align: right;">
+          <p class="total">Total Amount: $${order.totalAmount.toFixed(2)}</p>
+        </div>
+      </div>
+      <div class="footer">
+        <p>&copy; ${new Date().getFullYear()} K2-Taj. All rights reserved.</p>
+      </div>
+    </div>
+  </body>
+  </html>
+  `;
+};
+
+// ---------------- Admin Email ----------------
+const orderNotificationTemplate = (user, order) => {
+  return `
+  <!DOCTYPE html>
+  <html>
+  <head>
+    <meta charset="utf-8" />
+    <title>New Order Notification</title>
+    <style>
+      body { font-family: Arial, sans-serif; background: #fff; margin: 0; padding: 0; }
+      .container { max-width: 800px; margin: 30px auto; border: 1px solid #ddd; border-radius: 8px; overflow: hidden; }
+      .header { background: #f5b301; color: #221b4b; padding: 20px; text-align: center; }
+      .header h1 { margin: 0; font-size: 22px; }
+      .content { padding: 20px; }
+      table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+      th, td { border: 1px solid #ddd; padding: 10px; text-align: center; font-size: 13px; }
+      th { background: #221b4b; color: #fff; }
+      td img { width: 60px; height: 60px; object-fit: cover; border-radius: 6px; }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="header">
+        <h1>🛒 New Order Received</h1>
+      </div>
+      <div class="content">
+        <p><strong>Customer:</strong> ${user.firstName} ${user.lastName} (${user.email})</p>
+        <p><strong>Phone:</strong> ${user.phone || "N/A"}</p>
+        <p><strong>Address:</strong> ${user.address}, ${user.city}, ${user.postcode}</p>
+
+        <table>
+          <thead>
+            <tr>
+              <th>Product</th>
+              <th>Name</th>
+              <th>Qty</th>
+              <th>Price</th>
+              <th>Total</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${order.items.map(item => `
+              <tr>
+                <td><img src="${BASE_URL}/${item.imageUrl}" alt="${item.name}" /></td>
+                <td>${item.name}</td>
+                <td>${item.quantity}</td>
+                <td>$${item.price.toFixed(2)}</td>
+                <td>$${(item.price * item.quantity).toFixed(2)}</td>
+              </tr>
+            `).join("")}
+          </tbody>
+        </table>
+
+        <p style="text-align: right; font-weight: bold; margin-top: 20px;">
+          Total Amount: $${order.totalAmount.toFixed(2)}
+        </p>
+      </div>
+    </div>
+  </body>
+  </html>
+  `;
+};
+
+module.exports = { orderConfirmationTemplate, orderNotificationTemplate };

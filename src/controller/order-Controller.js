@@ -1,5 +1,7 @@
 const Order = require('../models/order-model');
-
+const sendEmail = require('../utils/sendEmail');
+const { orderConfirmationTemplate, orderNotificationTemplate } = require('../utils/emailTemplates');
+const packedOrderEmail = require('../utils/packedOrder');
 //**************************************************** */
 //        CREATE ORDER
 //**************************************************** */
@@ -10,13 +12,42 @@ const createOrder = async (req, res) => {
       return res.status(400).json({ message: "Missing required fields" });
     }
     const newOrder = await Order.create({ user, items, totalAmount });
-    res.status(201).json({ message: "Order Created Successfully", order: newOrder });
+    // Customer email
+    const customerHtml = orderConfirmationTemplate(user, newOrder);
+    await sendEmail(user.email, "Your Order is Confirmed 🎉", customerHtml);
+    // Admin email
+    const adminHtml = orderNotificationTemplate(user, newOrder);
+    await sendEmail(process.env.ADMIN_EMAIL, "New Order Received 🛒", adminHtml);
+    res.status(201).json({
+      message: "Order Created Successfully & Emails Sent",
+      order: newOrder,
+    });
   } catch (err) {
     console.error("Create Order Error:", err);
     res.status(500).json({ message: err.message });
   }
 };
+// Update order status & notify customer
+const confirmOrder = async (req, res) => {
+  try {
+    const { id } = req.params;
+    // find order
+    const order = await Order.findById(id);
+    if (!order) return res.status(404).json({ message: "Order not found" });
 
+    // update status
+    order.status = "confirmed";
+    await order.save();
+
+    // send email
+    await packedOrderEmail(order, "confirmed");
+
+    res.status(200).json({ message: "Order confirmed & email sent", order });
+  } catch (err) {
+    console.error("Confirm Order Error:", err);
+    res.status(500).json({ message: err.message });
+  }
+};
 //**************************************************** */
 //        GET ALL ORDERS
 //**************************************************** */
@@ -91,4 +122,5 @@ module.exports = {
   getOrderById,
   updateOrder,
   deleteOrder,
+  confirmOrder
 };
