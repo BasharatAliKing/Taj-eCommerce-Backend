@@ -9,14 +9,14 @@ const foodItemRouter=require("./router/foodItems-Router")
 const categoryRouter=require("./router/category.Router")
 const orderRouter=require("./router/order-Router");
 const galleryRouter=require("./router/gallery-router");
-const allowedOrigins = ["https://greenceo.co", "http://localhost:5173"];
+const allowedOrigins = ["https://k2taj.co.uk", "http://localhost:5173"];
 
-// const coreOptions = {
-//     origin: "http://localhost:5173/",
-//     methods: "GET, POST, DELETE, PATCH,PUT",
-//     credentials: true,
-// }
-// app.use(cors(coreOptions));
+const coreOptions = {
+    origin: "http://localhost:5173/",
+    methods: "GET, POST, DELETE, PATCH,PUT",
+    credentials: true,
+}
+app.use(cors(coreOptions));
 app.use(
   cors({
     origin: function (origin, callback) {
@@ -30,7 +30,7 @@ app.use(
   })
 );
 
-// app.use(cors(coreOptions));
+app.use(cors(coreOptions));
 // for Image get in frontend
 app.use(express.static("public"));
 // Increase JSON payload limit
