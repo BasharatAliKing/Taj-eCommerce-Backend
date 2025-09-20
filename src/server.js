@@ -9,7 +9,7 @@ const foodItemRouter=require("./router/foodItems-Router")
 const categoryRouter=require("./router/category.Router")
 const orderRouter=require("./router/order-Router");
 const galleryRouter=require("./router/gallery-router");
-const allowedOrigins = ["https://k2taj.co.uk", "https://www.k2taj.co.uk"];
+const allowedOrigins = ["https://k2taj.co.uk", "https://www.k2taj.co.uk", "http://localhost:5173"];
 
 app.use(cors({
   origin: allowedOrigins,
