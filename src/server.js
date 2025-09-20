@@ -12,7 +12,7 @@ const galleryRouter=require("./router/gallery-router");
 const allowedOrigins = ["https://k2taj.co.uk", "http://localhost:5173"];
 
 const coreOptions = {
-    origin: "http://localhost:5173/",
+    origin: "https://k2taj.co.uk",
     methods: "GET, POST, DELETE, PATCH,PUT",
     credentials: true,
 }
