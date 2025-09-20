@@ -9,28 +9,22 @@ const foodItemRouter=require("./router/foodItems-Router")
 const categoryRouter=require("./router/category.Router")
 const orderRouter=require("./router/order-Router");
 const galleryRouter=require("./router/gallery-router");
-const allowedOrigins = ["https://k2taj.co.uk", "http://localhost:5173"];
 
-const coreOptions = {
-    origin: "https://k2taj.co.uk",
-    methods: "GET, POST, DELETE, PATCH,PUT",
-    credentials: true,
-}
-app.use(cors(coreOptions));
-app.use(
-  cors({
-    origin: function (origin, callback) {
-      if (!origin || allowedOrigins.includes(origin)) {
-        callback(null, true);
-      } else {
-        callback(new Error("Not allowed by CORS"));
-      }
-    },
-    credentials: true,
-  })
-);
+const allowedOrigins = ["https://k2taj.co.uk", "https://www.k2taj.co.uk"];
 
-app.use(cors(coreOptions));
+app.use(cors({
+  origin: function(origin, callback){
+    if(!origin) return callback(null, true); // allow postman/curl
+    if(allowedOrigins.indexOf(origin) === -1){
+      const msg = 'The CORS policy for this site does not allow access from the specified Origin.';
+      return callback(new Error(msg), false);
+    }
+    return callback(null, true);
+  },
+  credentials: true
+}));
+
+// app.use(cors(coreOptions));
 // for Image get in frontend
 app.use(express.static("public"));
 // Increase JSON payload limit
