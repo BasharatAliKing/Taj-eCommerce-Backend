@@ -9,20 +9,25 @@ const foodItemRouter=require("./router/foodItems-Router")
 const categoryRouter=require("./router/category.Router")
 const orderRouter=require("./router/order-Router");
 const galleryRouter=require("./router/gallery-router");
-
 const allowedOrigins = ["https://k2taj.co.uk", "https://www.k2taj.co.uk"];
 
 app.use(cors({
-  origin: function(origin, callback){
-    if(!origin) return callback(null, true); // allow postman/curl
-    if(allowedOrigins.indexOf(origin) === -1){
-      const msg = 'The CORS policy for this site does not allow access from the specified Origin.';
-      return callback(new Error(msg), false);
-    }
-    return callback(null, true);
-  },
+  origin: allowedOrigins,
   credentials: true
 }));
+// const allowedOrigins = ["https://k2taj.co.uk", "https://www.k2taj.co.uk"];
+
+// app.use(cors({
+//   origin: function(origin, callback){
+//     if(!origin) return callback(null, true); // allow postman/curl
+//     if(allowedOrigins.indexOf(origin) === -1){
+//       const msg = 'The CORS policy for this site does not allow access from the specified Origin.';
+//       return callback(new Error(msg), false);
+//     }
+//     return callback(null, true);
+//   },
+//   credentials: true
+// }));
 
 // app.use(cors(coreOptions));
 // for Image get in frontend
