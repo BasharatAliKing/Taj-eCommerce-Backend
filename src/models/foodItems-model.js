@@ -20,5 +20,7 @@ const foodItemSchema = new mongoose.Schema({
     },
   ],
 });
+// ✅ Make suggestions optional with default empty array
+foodItemSchema.path("suggestions").default([]);
 
 module.exports = mongoose.model("FoodItem", foodItemSchema);
