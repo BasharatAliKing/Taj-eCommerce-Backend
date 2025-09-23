@@ -53,6 +53,35 @@ const getFoodItemById = async (req, res) => {
 //************************************************ */
 //    DELETE FOOD ITEM
 //************************************************ */
+// const deleteFoodItemById = async (req, res) => {
+//   try {
+//     const product = await FoodItem.findById(req.params.id);
+
+//     if (!product) {
+//       return res.status(404).json({ message: "Product not found" });
+//     }
+//     // Delete image from public/images
+//     const imagePath = path.join(
+//       __dirname,
+//       "../../",
+//       "public",
+//       product.imageUrl
+//     );
+//     fs.unlink(imagePath, (err) => {
+//       if (err) {
+//         console.error("Failed to delete old image:", err);
+//       } else {
+//         console.log("Old image deleted successfully");
+//       }
+//     });
+//     // Delete product from DB
+//     await FoodItem.findByIdAndDelete(req.params.id);
+//     res.status(200).json({ message: "Product and image deleted successfully" });
+//   } catch (err) {
+//     console.error("Delete error:", err);
+//     res.status(500).json({ message: err.message });
+//   }
+// };
 const deleteFoodItemById = async (req, res) => {
   try {
     const product = await FoodItem.findById(req.params.id);
@@ -60,28 +89,32 @@ const deleteFoodItemById = async (req, res) => {
     if (!product) {
       return res.status(404).json({ message: "Product not found" });
     }
-    // Delete image from public/images
-    const imagePath = path.join(
-      __dirname,
-      "../../",
-      "public",
-      product.imageUrl
-    );
-    fs.unlink(imagePath, (err) => {
-      if (err) {
-        console.error("Failed to delete old image:", err);
-      } else {
-        console.log("Old image deleted successfully");
-      }
-    });
-    // Delete product from DB
+    // ✅ Only delete the image if it exists
+    if (product.imageUrl) {
+      const imagePath = path.join(__dirname, "../../", "public", product.imageUrl);
+
+      fs.unlink(imagePath, (err) => {
+        if (err) {
+          console.error("Failed to delete old image:", err);
+        } else {
+          console.log("Old image deleted successfully");
+        }
+      });
+    }
+
+    // ✅ Delete product from DB
     await FoodItem.findByIdAndDelete(req.params.id);
-    res.status(200).json({ message: "Product and image deleted successfully" });
+
+    res.status(200).json({
+      message: "Product deleted successfully",
+      note: product.imageUrl ? "Image also deleted" : "No image was associated",
+    });
   } catch (err) {
     console.error("Delete error:", err);
     res.status(500).json({ message: err.message });
   }
 };
+
 //************************************************ */
 //    UPDATE FOOD ITEM
 //************************************************ */
