@@ -1,7 +1,7 @@
 require("dotenv").config();
 const nodemailer = require("nodemailer");
 
-const sendEmailToMultipleUsers = async (emails, subject, htmlContent) => {
+const forgotPasswordEmail = async (emails, subject, htmlContent) => {
   const transporter = nodemailer.createTransport({
     service: "gmail",
     auth: {
@@ -18,4 +18,4 @@ const sendEmailToMultipleUsers = async (emails, subject, htmlContent) => {
   await transporter.sendMail(mailOptions);
 };
 
-module.exports = { sendEmailToMultipleUsers };
+module.exports = { forgotPasswordEmail };

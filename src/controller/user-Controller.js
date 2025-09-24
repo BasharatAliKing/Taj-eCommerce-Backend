@@ -2,7 +2,7 @@ const express = require("express");
 const User = require("../models/user-model");
 const bcrypt = require("bcryptjs");
 const crypto = require("crypto");
-const sendEmailToMultipleUsers=require("../utils/forgotPasswordEmail")
+const {forgotPasswordEmail}=require("../utils/forgotPasswordEmail")
 const Register = async (req, res) => {
   try {
     const { username, email, password } = req.body;
@@ -86,7 +86,7 @@ const forgotPassword = async (req, res) => {
     </div>
   </div>
 `;
-  await sendEmailToMultipleUsers(user.email, "Reset Password", html);
+  await forgotPasswordEmail(user.email, "Reset Password", html);
   res.json({ message: "Reset email sent" });
 };
 //***************************************************** */
