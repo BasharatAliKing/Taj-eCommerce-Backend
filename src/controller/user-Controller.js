@@ -66,7 +66,7 @@ const forgotPassword = async (req, res) => {
   user.resetPasswordToken = token;
   user.resetPasswordExpires = Date.now() + 3600000; // 1 hour
   await user.save();
-  const resetUrl = `http://localhost:5173/reset-password/${token}`;
+  const resetUrl = `https://k2taj.co.uk/reset-password/${token}`;
   const html = `
   <div style="font-family: Arial, sans-serif; padding: 20px; background-color: #f4f4f4;">
     <div style="max-width: 600px; margin: 0 auto; background-color: #ffffff; border-radius: 8px; box-shadow: 0 2px 6px rgba(0,0,0,0.1); padding: 30px;">
