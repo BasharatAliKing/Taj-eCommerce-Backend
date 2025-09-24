@@ -1,6 +1,7 @@
 const express = require("express");
 const User = require("../models/user-model");
 const bcrypt = require("bcryptjs");
+const crypto = require("crypto");
 const sendEmailToMultipleUsers=require("../utils/forgotPasswordEmail")
 const Register = async (req, res) => {
   try {
