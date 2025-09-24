@@ -1,12 +1,16 @@
-const BASE_URL = process.env.SERVER_URL || "http://localhost:3000";
+const BASE_URL =  "https://k2taj.co.uk";
 
 // ---------------- Customer Email ----------------
 const orderConfirmationTemplate = (user, order) => {
+  // check if any item has size
+  const hasSize = order.items.some(item => item.size);
+
   return `
   <!DOCTYPE html>
   <html>
   <head>
     <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Order Confirmation</title>
     <style>
       body { font-family: Arial, sans-serif; background: #f5f5f5; margin: 0; padding: 0; }
@@ -16,13 +20,23 @@ const orderConfirmationTemplate = (user, order) => {
       .content { padding: 20px; color: #333; }
       .summary { margin: 20px 0; font-size: 15px; }
       .summary p { margin: 4px 0; }
-      .table-container { margin-top: 20px; }
-      table { width: 100%; border-collapse: collapse; }
+      .table-container { margin-top: 20px; overflow-x: auto; }
+      table { width: 100%; border-collapse: collapse; min-width: 500px; }
       th, td { border: 1px solid #ddd; padding: 12px; text-align: center; font-size: 14px; }
       th { background: #f5b301; color: #221b4b; }
       td img { width: 70px; height: 70px; object-fit: cover; border-radius: 6px; }
       .total { font-weight: bold; font-size: 16px; }
       .footer { background: #fafafa; text-align: center; padding: 15px; font-size: 13px; color: #777; }
+
+      /* Responsive */
+      @media (max-width: 600px) {
+        .container { margin: 10px; width: auto; }
+        table, thead, tbody, th, td, tr { display: block; width: 100%; }
+        thead { display: none; }
+        tr { margin-bottom: 15px; border: 1px solid #ddd; border-radius: 6px; padding: 10px; }
+        td { border: none; text-align: left; padding: 8px; }
+        td img { width: 100%; max-width: 120px; height: auto; }
+      }
     </style>
   </head>
   <body>
@@ -47,6 +61,7 @@ const orderConfirmationTemplate = (user, order) => {
               <tr>
                 <th>Product</th>
                 <th>Name</th>
+                ${hasSize ? "<th>Size</th>" : ""}
                 <th>Category</th>
                 <th>Qty</th>
                 <th>Price</th>
@@ -58,6 +73,7 @@ const orderConfirmationTemplate = (user, order) => {
                 <tr>
                   <td><img src="${BASE_URL}/${item.imageUrl}" alt="${item.name}" /></td>
                   <td>${item.name}</td>
+                  ${hasSize ? `<td>${item.size || "-"}</td>` : ""}
                   <td>${item.category}</td>
                   <td>${item.quantity}</td>
                   <td>$${item.price.toFixed(2)}</td>
@@ -83,11 +99,14 @@ const orderConfirmationTemplate = (user, order) => {
 
 // ---------------- Admin Email ----------------
 const orderNotificationTemplate = (user, order) => {
+  const hasSize = order.items.some(item => item.size);
+
   return `
   <!DOCTYPE html>
   <html>
   <head>
     <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>New Order Notification</title>
     <style>
       body { font-family: Arial, sans-serif; background: #fff; margin: 0; padding: 0; }
@@ -95,10 +114,21 @@ const orderNotificationTemplate = (user, order) => {
       .header { background: #f5b301; color: #221b4b; padding: 20px; text-align: center; }
       .header h1 { margin: 0; font-size: 22px; }
       .content { padding: 20px; }
-      table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+      .table-container { margin-top: 20px; overflow-x: auto; }
+      table { width: 100%; border-collapse: collapse; min-width: 500px; }
       th, td { border: 1px solid #ddd; padding: 10px; text-align: center; font-size: 13px; }
       th { background: #221b4b; color: #fff; }
       td img { width: 60px; height: 60px; object-fit: cover; border-radius: 6px; }
+
+      /* Responsive */
+      @media (max-width: 600px) {
+        .container { margin: 10px; width: auto; }
+        table, thead, tbody, th, td, tr { display: block; width: 100%; }
+        thead { display: none; }
+        tr { margin-bottom: 15px; border: 1px solid #ddd; border-radius: 6px; padding: 10px; }
+        td { border: none; text-align: left; padding: 8px; }
+        td img { width: 100%; max-width: 100px; height: auto; }
+      }
     </style>
   </head>
   <body>
@@ -111,28 +141,32 @@ const orderNotificationTemplate = (user, order) => {
         <p><strong>Phone:</strong> ${user.phone || "N/A"}</p>
         <p><strong>Address:</strong> ${user.address}, ${user.city}, ${user.postcode}</p>
 
-        <table>
-          <thead>
-            <tr>
-              <th>Product</th>
-              <th>Name</th>
-              <th>Qty</th>
-              <th>Price</th>
-              <th>Total</th>
-            </tr>
-          </thead>
-          <tbody>
-            ${order.items.map(item => `
+        <div class="table-container">
+          <table>
+            <thead>
               <tr>
-                <td><img src="${BASE_URL}/${item.imageUrl}" alt="${item.name}" /></td>
-                <td>${item.name}</td>
-                <td>${item.quantity}</td>
-                <td>$${item.price.toFixed(2)}</td>
-                <td>$${(item.price * item.quantity).toFixed(2)}</td>
+                <th>Product</th>
+                <th>Name</th>
+                ${hasSize ? "<th>Size</th>" : ""}
+                <th>Qty</th>
+                <th>Price</th>
+                <th>Total</th>
               </tr>
-            `).join("")}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              ${order.items.map(item => `
+                <tr>
+                  <td><img src="${BASE_URL}/${item.imageUrl}" alt="${item.name}" /></td>
+                  <td>${item.name}</td>
+                  ${hasSize ? `<td>${item.size || "-"}</td>` : ""}
+                  <td>${item.quantity}</td>
+                  <td>$${item.price.toFixed(2)}</td>
+                  <td>$${(item.price * item.quantity).toFixed(2)}</td>
+                </tr>
+              `).join("")}
+            </tbody>
+          </table>
+        </div>
 
         <p style="text-align: right; font-weight: bold; margin-top: 20px;">
           Total Amount: $${order.totalAmount.toFixed(2)}
