@@ -19,6 +19,8 @@ const registerSchema = new mongoose.Schema({
     type: String,
     default: "user",
   },
+  resetPasswordToken: String,
+  resetPasswordExpires: Date
 });
 // token creaated herer
 registerSchema.methods.generateToken = async function () {

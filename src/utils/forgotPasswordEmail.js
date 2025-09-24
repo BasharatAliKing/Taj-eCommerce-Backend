@@ -10,7 +10,7 @@ const forgotPasswordEmail = async (emails, subject, htmlContent) => {
     },
   });
   const mailOptions = {
-    from: process.env.EMAIL_USER,
+    from: `"No Reply - Your Shop" <${process.env.EMAIL_USER}>`,
     to: emails, // ✅ multiple emails as comma-separated string
     subject,
     html: htmlContent,

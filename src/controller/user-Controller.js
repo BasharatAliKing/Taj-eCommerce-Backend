@@ -2,7 +2,7 @@ const express = require("express");
 const User = require("../models/user-model");
 const bcrypt = require("bcryptjs");
 const crypto = require("crypto");
-const {forgotPasswordEmail}=require("../utils/forgotPasswordEmail")
+const { forgotPasswordEmail } = require("../utils/forgotPasswordEmail");
 const Register = async (req, res) => {
   try {
     const { username, email, password } = req.body;
@@ -46,30 +46,27 @@ const Login = async (req, res) => {
     res.status(404).json({ message: err });
   }
 };
-const user=async(req,res)=>{
-    try{
-        const userData=req.user;
-       // console.log(req.user)
-          res.status(200).json({message:userData});
-       
-    }catch(err){
-        res.status(500).send(err);
-    }
-}
+const user = async (req, res) => {
+  try {
+    const userData = req.user;
+    // console.log(req.user)
+    res.status(200).json({ message: userData });
+  } catch (err) {
+    res.status(500).send(err);
+  }
+};
 //***************************************************** */
 //      Forgot Password
 //***************************************************** */
 const forgotPassword = async (req, res) => {
   const { email } = req.body;
   const user = await User.findOne({ email });
-
   if (!user) return res.status(400).json({ message: "User not found" });
-
   const token = crypto.randomBytes(20).toString("hex");
   user.resetPasswordToken = token;
   user.resetPasswordExpires = Date.now() + 3600000; // 1 hour
   await user.save();
-  const resetUrl = `https://k2taj.co.uk/reset-password/${token}`;
+  const resetUrl = `http://localhost:5173/reset-password/${token}`;
   const html = `
   <div style="font-family: Arial, sans-serif; padding: 20px; background-color: #f4f4f4;">
     <div style="max-width: 600px; margin: 0 auto; background-color: #ffffff; border-radius: 8px; box-shadow: 0 2px 6px rgba(0,0,0,0.1); padding: 30px;">
@@ -93,20 +90,26 @@ const forgotPassword = async (req, res) => {
 //      Reset Password
 //***************************************************** */
 const resetPassword = async (req, res) => {
-  const { password } = req.body;
-  const user = await User.findOne({
-    resetPasswordToken: req.params.token,
-    resetPasswordExpires: { $gt: Date.now() },
-  });
-  if (!user)
-    return res.status(400).json({ message: "Invalid or expired token" });
-  const salt = await bcrypt.genSalt(10);
-  const hashedPassword = await bcrypt.hash(password, salt);
-  user.password = hashedPassword;
-  user.resetPasswordToken = undefined;
-  user.resetPasswordExpires = undefined;
-  await user.save();
-  res.json({ message: "Password reset successfully" });
+  try {
+  //  console.log("Received token:", req.params.token);
+    const user = await User.findOne({
+      resetPasswordToken: req.params.token,
+      resetPasswordExpires: { $gt: Date.now() },
+    });
+    if (!user) {
+      return res.status(400).json({ message: "Invalid or expired token" });
+    }
+    const salt = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash(req.body.password, salt);
+    user.password = hashedPassword;
+    user.resetPasswordToken = undefined;
+    user.resetPasswordExpires = undefined;
+    await user.save();
+    res.json({ message: "Password reset successfully" });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Server error", error: err.message });
+  }
 };
 
-module.exports = { Register, Login, user , forgotPassword, resetPassword };
+module.exports = { Register, Login, user, forgotPassword, resetPassword };
