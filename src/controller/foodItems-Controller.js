@@ -170,7 +170,7 @@ const updateFoodItemById = async (req, res) => {
 //****************************************************** */
 const getRandomMenu = async (req, res) => {
   try {
-    const limit = parseInt(req.query.limit) || 5; // how many random items
+    const limit = parseInt(req.query.limit) || 9; // how many random items
     const randomItems = await FoodItem.aggregate([
       { $sample: { size: limit } },
     ]);
